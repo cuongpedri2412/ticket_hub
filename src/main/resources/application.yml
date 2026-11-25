@@ -1,0 +1,47 @@
+spring:
+  application:
+    name: tickethub
+
+  # Giá trị sau dấu ":" là mặc định cho máy local.
+  # Môi trường khác truyền qua biến môi trường DB_URL, DB_USERNAME, DB_PASSWORD.
+  datasource:
+    url: ${DB_URL:jdbc:mariadb://localhost:3306/tickethub}
+    username: ${DB_USERNAME:tickethub}
+    password: ${DB_PASSWORD:tickethub}
+    hikari:
+      maximum-pool-size: 10
+
+  jpa:
+    open-in-view: false            # tắt để không vô tình query DB ở tầng controller
+    hibernate:
+      ddl-auto: validate           # schema do Flyway quản lý, Hibernate chỉ kiểm tra khớp
+    show-sql: true                 # xem SQL sinh ra, cần để phát hiện lỗi N+1
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc:
+          time_zone: UTC           # mọi thời điểm lưu xuống DB theo UTC
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+  data:
+    web:
+      pageable:
+        max-page-size: 100         # chặn client xin size=1000000
+
+server:
+  port: 8080
+  error:
+    include-stacktrace: never
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
